@@ -18,8 +18,6 @@ public class Validation {
 
     public final String REGEX_STRING = "[a-zA-Z0-9 ]+";
     public final String REGEX_NAME = "[a-zA-Z ]+";
-    
-    
 
     public int getInteger(String message, String firstError, String secondError, String thirdError, double min,
             double max) {
@@ -119,6 +117,39 @@ public class Validation {
         }
     }
 
+    
+    //Hàm tìm kiếm task có id trùng với id tìm kiếm
+    public Task getTaskByID(List<Task> list, int id) {
+        for (Task task : list) {
+            if (task.getId() == id) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    //Hàm check over time nếu có bị trùng time với ca làm từ trước hay không
+    public boolean checkOverLabs(List<Task> list, String date, String assignee, double from, double to) {
+        for (Task task : list) {
+            //Nếu mà date, assignee của task mà trùng thì tiến hành compare thời gian
+            if (task.getDate().compareToIgnoreCase(date) == 0 && task.getAssignee().compareToIgnoreCase(assignee) == 0) {
+               
+                //TH1: from 2 < from1 && to2 > from1
+                if (from < task.getFrom() && to > task.getFrom()) {
+                    return true;
+                }
+                //TH2: from2 = from1
+                if (from == task.getFrom()) {
+                    return true;
+                }
+                //TH3: from2 > from1 && from 2 < to 1
+                if (from > task.getFrom() && from < task.getTo()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public String getDate(String mess, String error) {
         Scanner sc = new Scanner(System.in);
@@ -130,21 +161,25 @@ public class Validation {
                 System.out.println("Please date to correct format(dd-mm-yyyy)");
             } else {
                 //check data exist
+                //Khởi tạo đối tượng SimpleDateFormat để phân tích chuỗi input thành đối tượng Date
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
                 dateFormat.setLenient(false);
                 try {
                     //trả về kiểu dữ liệu là date
+                    //Parse input từ kiểu String về date để so sánh với thời gian hiện tại trong máy
                     Date dateInput = dateFormat.parse(input);
+
+                    //Format lại thời gian hiện tại bằng đối tượng dateFormat theo kiểu date dd-mm-yyyy và xóa ngày giờ của date
                     Date currentDate = new Date();
                     currentDate = dateFormat.parse(dateFormat.format(currentDate));
 
-                    //so sánh
+                    //so sánh thời gian nhập vào có bé hơn thời gian trong máy hay không!
                     if (dateInput.before(currentDate)) {
                         System.out.println("Date input must be greater or equal current date");
                     } else {
                         return input;
                     }
-                    //ParseException là gì ?
+
                 } catch (ParseException e) {
                     System.out.println(error);
                 }
@@ -155,4 +190,3 @@ public class Validation {
     }
 
 }
-

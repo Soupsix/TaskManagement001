@@ -27,7 +27,7 @@ public class Main {
                     mng.input(id);
                     break;
                 case 2: 
-                    
+                    mng.deleteTask();
                     break;
                 case 3: 
                     mng.getDataTask();
